@@ -1,9 +1,6 @@
 package co.com.crediya.api.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +8,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserDTO {
 
     private String firstName;
@@ -18,6 +16,8 @@ public class UserDTO {
     private String lastName;
 
     private LocalDate birthDate;
+
+    private String identityDocument;
 
     private String address;
 

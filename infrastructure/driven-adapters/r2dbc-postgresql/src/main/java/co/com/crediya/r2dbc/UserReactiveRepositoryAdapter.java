@@ -21,11 +21,6 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
 
     public UserReactiveRepositoryAdapter(UserReactiveRepository repository, ObjectMapper mapper, TransactionalOperator txOperator) {
-        /**
-         *  Could be use mapper.mapBuilder if your domain model implement builder pattern
-         *  super(repository, mapper, d -> mapper.mapBuilder(d,ObjectModel.ObjectModelBuilder.class).build());
-         *  Or using mapper.map with the class of the object model
-         */
         super(repository, mapper, d -> mapper.map(d, User.class/* change for domain model */), txOperator);
     }
 
@@ -35,7 +30,7 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
-    public Mono<Boolean> existsByEmail(String email) {
+    public Mono<Boolean> existsByEmail(String email) {//validacion documento
         return this.repository.existsByEmail(email);
     }
  }

@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @ContextConfiguration(classes = {RouterRest.class, Handler.class})
 @WebFluxTest
+@Import(GlobalExceptionHandler.class)
 class RouterRestTest {
 
     @Autowired
@@ -61,14 +63,15 @@ class RouterRestTest {
     );
 
     UserDTO userDTO = new UserDTO(
-            "Joel",                            // firstName
-            "Flores",                          // lastName
-            LocalDate.of(1995, 5, 21),         // birthDate
-            "Av. Siempre Viva 123",            // address
-            "987654321",                        // phone
-            "joel@test.com",                    // email
-            new BigDecimal("3500.00"),          // baseSalary
-            1L                                  // roleId
+            "Joel",
+            "Flores",
+            LocalDate.of(1995, 5, 21),
+            "11112143",
+            "Av. Siempre Viva 123",
+            "987654321",
+            "joel@test.com",
+            new BigDecimal("3500.00"),
+            1L
     );
 
     @Test
@@ -86,5 +89,28 @@ class RouterRestTest {
                 .expectBody(new ParameterizedTypeReference<ApiResponse<UserDTO>>() {})
                 .value(response -> Assertions.assertThat(response.getData().getEmail())
                         .isEqualTo(createUserDTO.getEmail()));
+    }
+
+
+    @Test
+    void testWhenEmailIsInvalid() {
+        CreateUserDTO invalidUserDTO = new CreateUserDTO(
+                "Joel",
+                "Flores",
+                LocalDate.of(1995, 5, 21),
+                "Av. Siempre Viva 123",
+                "987654321",
+                "correo-invalido",
+                "12345678",
+                new BigDecimal("3500.00"),
+                1L
+        );
+
+        webTestClient.post()
+                .uri("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(invalidUserDTO)
+                .exchange()
+                .expectStatus().isBadRequest(); // Esperamos error de validación
     }
 }

@@ -15,6 +15,7 @@ public class UserUseCase {
         return roleRepository.findById(user.getRoleId())
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("The role does not exist")))
                 .flatMap(role -> userRepository.existsByEmail(user.getEmail())
+                        //agregar filter
                         .flatMap(exists -> {
                             if (exists) {
                                 return Mono.error(new IllegalArgumentException("The email address is already registered"));
@@ -24,7 +25,5 @@ public class UserUseCase {
                 );
     }
 
-    public Mono<Boolean> existsByEmail(String email){
-        return userRepository.existsByEmail(email);
-    }
+
 }

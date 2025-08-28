@@ -13,9 +13,7 @@ import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,11 +22,6 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler implements WebExceptionHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private static final Map<String, String> CONSTRAINT_MESSAGES = Map.of(
-            "users_email_key", "El email ya está registrado",
-            "users_identity_document_key", "El documento de identidad ya está registrado"
-    );
 
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
@@ -52,7 +45,7 @@ public class GlobalExceptionHandler implements WebExceptionHandler {
                             (m1, m2) -> m1
                     ));
 
-            body.put("status", HttpStatus.BAD_REQUEST.value());
+            body.put("status", HttpStatus.BAD_REQUEST.value());// no repetir codigo
             body.put("errors", errors);
 
         } else if (ex instanceof IllegalArgumentException) {
@@ -63,7 +56,7 @@ public class GlobalExceptionHandler implements WebExceptionHandler {
         } else if (ex instanceof DuplicateKeyException) {
             exchange.getResponse().setStatusCode(HttpStatus.CONFLICT);
             body.put("status", HttpStatus.CONFLICT.value());
-            body.put("error", "El recurso ya existe o viola una restricción única");
+            body.put("error", "The resource already exists or violates a unique constraint.");
 
         } else {
             exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);

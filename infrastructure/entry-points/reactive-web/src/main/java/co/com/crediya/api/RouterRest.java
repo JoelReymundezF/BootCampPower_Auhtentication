@@ -29,28 +29,7 @@ public class RouterRest {
             @RouterOperation(
                     path = "/api/v1/users",
                     beanClass = Handler.class,
-                    beanMethod = "saveUser",
-                    operation = @Operation(
-                            operationId = "saveUser",
-                            summary = "Register new user",
-                            description = "Recibe un objeto UsuarioRequestDTO y guarda un usuario en el sistema",
-                            requestBody = @RequestBody(
-                                    required = true,
-                                    description = "Datos del usuario a registrar",
-                                    content = @Content(schema = @Schema(implementation = CreateUserDTO.class))
-                            ),
-                            responses = {
-                                    @ApiResponse(responseCode = "201", description = "User created successfully",
-                                            content = @Content(mediaType = "application/json",
-                                                    schema = @Schema(implementation = String.class))),
-                                    @ApiResponse(responseCode = "400", description = "Error de validación",
-                                            content = @Content(mediaType = "application/json",
-                                                    schema = @Schema(implementation = String.class))),
-                                    @ApiResponse(responseCode = "500", description = "Error interno",
-                                            content = @Content(mediaType = "application/json",
-                                                    schema = @Schema(implementation = String.class)))
-                            }
-                    )
+                    beanMethod = "listenSaveUser"
             )
     })
     public RouterFunction<ServerResponse> routerFunction(Handler userHandler) {
