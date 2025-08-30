@@ -13,8 +13,8 @@ import java.math.BigInteger;
 
 @Repository
 public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
-    User/* change for domain model */,
-        UserEntity/* change for adapter model */,
+    User,
+        UserEntity,
         BigInteger,
         UserReactiveRepository
 > implements UserRepository {
@@ -30,7 +30,7 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
-    public Mono<Boolean> existsByEmail(String email) {//validacion documento
-        return this.repository.existsByEmail(email);
+    public Mono<Boolean> existsByEmailOrIdentityDocument(String email, String identityDocument) {
+        return this.repository.existsByEmailOrIdentityDocument(email,identityDocument);
     }
  }

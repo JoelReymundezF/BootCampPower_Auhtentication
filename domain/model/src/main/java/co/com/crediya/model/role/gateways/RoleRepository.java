@@ -5,5 +5,5 @@ import co.com.crediya.model.user.User;
 import reactor.core.publisher.Mono;
 
 public interface RoleRepository {
-   Mono<Role> findById(Long id);
+   Mono<Boolean> existsById(Long id);
 }

@@ -1,15 +1,22 @@
 package co.com.crediya.api.config;
 
-import co.com.crediya.api.Handler;
-import co.com.crediya.api.RouterRest;
+import co.com.crediya.api.UserHandler;
+import co.com.crediya.api.UserRouterRest;
+import co.com.crediya.api.helper.validation.ValidationUtil;
+import co.com.crediya.api.mapper.UserMapperDTO;
+import co.com.crediya.model.user.User;
+import co.com.crediya.usecase.user.UserUseCase;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+@ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {
@@ -17,9 +24,22 @@ class ConfigTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @MockitoBean
+    private UserUseCase userUseCase;
+
+    @MockitoBean
+    private UserMapperDTO userMapper;
+
+    @MockitoBean
+    private ValidationUtil validationUtil;
+
     @Test
     void corsConfigurationShouldAllowOrigins() {
-        webTestClient.get()
+
+        Mockito.when(userUseCase.saveUser(Mockito.any()))
+                .thenReturn(Mono.just(new User()));
+
+        webTestClient.post()
                 .uri("/api/v1/users")
                 .exchange()
                 .expectStatus().isOk()

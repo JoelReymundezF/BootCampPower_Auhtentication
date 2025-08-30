@@ -2,16 +2,17 @@ package co.com.crediya.api;
 
 import co.com.crediya.api.dto.CreateUserDTO;
 import co.com.crediya.api.dto.UserDTO;
-import co.com.crediya.api.helper.ApiResponse;
+import co.com.crediya.api.helper.validation.ValidationUtil;
 import co.com.crediya.api.mapper.UserMapperDTO;
 import co.com.crediya.model.user.User;
 import co.com.crediya.usecase.user.UserUseCase;
-import org.assertj.core.api.Assertions;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -20,13 +21,14 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+@ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
 @WebFluxTest
-@Import(GlobalExceptionHandler.class)
+@Import({UserRouterRest.class, UserHandler.class, GlobalExceptionHandler.class})
 class RouterRestTest {
 
     @Autowired
@@ -36,7 +38,10 @@ class RouterRestTest {
     private UserUseCase userUseCase;
 
     @MockitoBean
-    private UserMapperDTO userMapperDTO;
+    private UserMapperDTO userMapper;
+
+    @MockitoBean
+    private ValidationUtil validationUtil;
 
     private final User userOne = User.builder()
             .firstName("Joel")
@@ -62,7 +67,7 @@ class RouterRestTest {
             1L
     );
 
-    UserDTO userDTO = new UserDTO(
+    UserDTO responseDTO = new UserDTO(
             "Joel",
             "Flores",
             LocalDate.of(1995, 5, 21),
@@ -75,42 +80,59 @@ class RouterRestTest {
     );
 
     @Test
-    void testListenPOSTUseCase() {
-        when(userMapperDTO.toModel(any(CreateUserDTO.class))).thenReturn(userOne);
-        when(userUseCase.saveUser(any(User.class))).thenReturn(Mono.just(userOne));
-        when(userMapperDTO.toResponse(any(User.class))).thenReturn(userDTO);
+    void testListenSaveUserSuccess() {
 
+        // Modelo de dominio que devuelve el use case
+        var userModel = new co.com.crediya.model.user.User();
+        userModel.setFirstName("Joel");
+        userModel.setLastName("Flores");
+        userModel.setEmail("joel@test.com");
+        userModel.setIdentityDocument("12345678");
+
+        // DTO de respuesta que devuelve el mapper
+
+        // Mockear ValidationUtil: pasa validación
+        when(validationUtil.validate(any(CreateUserDTO.class))).thenReturn(Mono.just(createUserDTO));
+
+        // Mockear Mapper y UseCase
+        when(userMapper.toModel(any(CreateUserDTO.class))).thenReturn(userModel);
+        when(userUseCase.saveUser(any())).thenReturn(Mono.just(userModel));
+        when(userMapper.toResponse(any())).thenReturn(responseDTO);
+
+        // Test WebTestClient
         webTestClient.post()
                 .uri("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(createUserDTO)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDTO>>() {})
-                .value(response -> Assertions.assertThat(response.getData().getEmail())
-                        .isEqualTo(createUserDTO.getEmail()));
+                .expectBody()
+                .jsonPath("$.data.firstName").isEqualTo("Joel")
+                .jsonPath("$.data.lastName").isEqualTo("Flores");
     }
 
-
     @Test
-    void testWhenEmailIsInvalid() {
-        CreateUserDTO invalidUserDTO = new CreateUserDTO(
-                "Joel",
-                "Flores",
-                LocalDate.of(1995, 5, 21),
-                "Av. Siempre Viva 123",
-                "987654321",
-                "correo-invalido",
-                "12345678",
-                new BigDecimal("3500.00"),
-                1L
-        );
+    void testListenSaveUserValidationError() {
+        // Mockeamos ValidationUtil para que lance ConstraintViolationException
+        ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
+        Mockito.when(violation.getMessage()).thenReturn("El campo email es obligatorio");
+
+        ConstraintViolationException exception =
+                new ConstraintViolationException(Set.of(violation));
+
+        Mockito.when(validationUtil.validate(Mockito.any(CreateUserDTO.class)))
+                .thenReturn(Mono.error(exception));
+
+        CreateUserDTO dto = new CreateUserDTO(); // campos vacíos
 
         webTestClient.post()
                 .uri("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(invalidUserDTO)
+                .bodyValue(dto)
                 .exchange()
-                .expectStatus().isBadRequest(); // Esperamos error de validación
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.code").isEqualTo(GlobalExceptionHandler.ERROR_VALIDATION)
+                .jsonPath("$.errors[0]").isEqualTo("El campo email es obligatorio");
     }
 }

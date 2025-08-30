@@ -11,5 +11,5 @@ import java.math.BigInteger;
 // TODO: This file is just an example, you should delete or modify it
 public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntity, BigInteger>, ReactiveQueryByExampleExecutor<UserEntity> {
 
-    Mono<Boolean> existsByEmail(String email);
+    Mono<Boolean> existsByEmailOrIdentityDocument(String email, String identityDocument);
 }
