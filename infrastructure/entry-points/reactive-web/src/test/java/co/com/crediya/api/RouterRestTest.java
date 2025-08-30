@@ -82,24 +82,18 @@ class RouterRestTest {
     @Test
     void testListenSaveUserSuccess() {
 
-        // Modelo de dominio que devuelve el use case
         var userModel = new co.com.crediya.model.user.User();
         userModel.setFirstName("Joel");
         userModel.setLastName("Flores");
         userModel.setEmail("joel@test.com");
         userModel.setIdentityDocument("12345678");
 
-        // DTO de respuesta que devuelve el mapper
-
-        // Mockear ValidationUtil: pasa validación
         when(validationUtil.validate(any(CreateUserDTO.class))).thenReturn(Mono.just(createUserDTO));
 
-        // Mockear Mapper y UseCase
         when(userMapper.toModel(any(CreateUserDTO.class))).thenReturn(userModel);
         when(userUseCase.saveUser(any())).thenReturn(Mono.just(userModel));
         when(userMapper.toResponse(any())).thenReturn(responseDTO);
 
-        // Test WebTestClient
         webTestClient.post()
                 .uri("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -113,7 +107,6 @@ class RouterRestTest {
 
     @Test
     void testListenSaveUserValidationError() {
-        // Mockeamos ValidationUtil para que lance ConstraintViolationException
         ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
         Mockito.when(violation.getMessage()).thenReturn("El campo email es obligatorio");
 
@@ -123,7 +116,7 @@ class RouterRestTest {
         Mockito.when(validationUtil.validate(Mockito.any(CreateUserDTO.class)))
                 .thenReturn(Mono.error(exception));
 
-        CreateUserDTO dto = new CreateUserDTO(); // campos vacíos
+        CreateUserDTO dto = new CreateUserDTO();
 
         webTestClient.post()
                 .uri("/api/v1/users")
