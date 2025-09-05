@@ -27,6 +27,7 @@ import java.util.Map;
 @Order(-2)
 public class GlobalExceptionHandler implements WebExceptionHandler {
 
+    public static final String OK                = "200_001";
     public static final String CREATED                = "201_001";
     public static final String ERROR_VALIDATION       = "422_001";
     public static final String CLIENT_ALREADY_EXISTS  = "409_001";

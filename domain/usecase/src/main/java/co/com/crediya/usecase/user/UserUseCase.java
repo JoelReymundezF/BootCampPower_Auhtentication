@@ -32,4 +32,9 @@ public class UserUseCase {
     }
 
 
+    public Mono<Boolean> existsByDocument(String identityDocument) {
+        return userRepository.existsByIdentityDocument(identityDocument);
+    }
+
+
 }

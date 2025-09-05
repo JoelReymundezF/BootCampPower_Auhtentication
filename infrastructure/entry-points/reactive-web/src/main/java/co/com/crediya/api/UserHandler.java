@@ -68,4 +68,21 @@ public class UserHandler {
                 .doOnNext(dto -> log.info("User created successfully"));
     }
 
+    public Mono<ServerResponse> listenExistsByDocument(ServerRequest request) {
+        String identityDocument = request.pathVariable("identityDocument");
+        log.info("Received request to identityDocument user :: {}", identityDocument);
+        return userUseCase.existsByDocument(identityDocument)
+                .flatMap(exists -> {
+                    ApiResponse<Boolean> response = new ApiResponse<>(
+                            GlobalExceptionHandler.OK,
+                            exists
+                    );
+                    return ServerResponse
+                            .status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(response);
+                })
+                .doOnNext(dto -> log.info("Verify exists user successfully"));
+    }
+
 }

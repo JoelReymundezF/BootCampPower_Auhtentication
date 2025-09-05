@@ -10,16 +10,6 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 public class ApiResponse<T> {
-    private String status;
+    private String code;
     private T data;
-    private String timestamp;
-
-    public ApiResponse(String status, T data) {
-        this.status = status;
-        this.data = data;
-        this.timestamp = Instant.now().toString();
-    }
-
-
-
 }
