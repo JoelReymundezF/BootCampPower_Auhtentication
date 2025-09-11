@@ -22,10 +22,16 @@ public class UserRouterRest {
                     path = "/api/v1/users",
                     beanClass = UserHandler.class,
                     beanMethod = "listenSaveUser"
+            ),
+            @RouterOperation(
+                    path = "/api/v1/login",
+                    beanClass = UserHandler.class,
+                    beanMethod = "listenLogin"
             )
     })
     public RouterFunction<ServerResponse> routerFunction(UserHandler userHandler) {
         return route(POST("/api/v1/users"), userHandler::listenSaveUser)
-                .andRoute(GET("/api/v1/users/existsByDocument/{identityDocument}"), userHandler::listenExistsByDocument);
+                .andRoute(GET("/api/v1/users/existsByDocument/{identityDocument}"), userHandler::listenExistsByDocument)
+                .andRoute(POST("/api/v1/login"), userHandler::listenLogin);
     }
 }

@@ -26,6 +26,9 @@ public class UserEntity {
     @Column("last_name")
     private String lastName;
 
+    @Column("password")
+    private String password;
+
     @Column("birth_date")
     private LocalDate birthDate;
 

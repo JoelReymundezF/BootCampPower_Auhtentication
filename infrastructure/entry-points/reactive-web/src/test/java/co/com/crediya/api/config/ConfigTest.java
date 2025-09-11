@@ -5,10 +5,12 @@ import co.com.crediya.api.UserRouterRest;
 import co.com.crediya.api.helper.validation.ValidationUtil;
 import co.com.crediya.api.mapper.UserMapperDTO;
 import co.com.crediya.model.user.User;
+import co.com.crediya.usecase.login.LoginUseCase;
 import co.com.crediya.usecase.user.UserUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +20,11 @@ import reactor.core.publisher.Mono;
 
 @ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
 @WebFluxTest
+@ImportAutoConfiguration(exclude = {
+        org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration.class
+})
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {
 
@@ -32,6 +39,9 @@ class ConfigTest {
 
     @MockitoBean
     private ValidationUtil validationUtil;
+
+    @MockitoBean
+    private LoginUseCase loginUseCase;
 
     @Test
     void corsConfigurationShouldAllowOrigins() {

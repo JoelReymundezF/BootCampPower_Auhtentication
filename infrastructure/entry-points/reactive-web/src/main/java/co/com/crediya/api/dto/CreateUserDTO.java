@@ -21,6 +21,10 @@ public class CreateUserDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
+    private String password;
+
     @Past(message = "Birth date must be in the past")
     private LocalDate birthDate;
 

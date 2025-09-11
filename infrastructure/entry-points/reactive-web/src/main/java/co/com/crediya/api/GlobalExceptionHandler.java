@@ -1,5 +1,7 @@
 package co.com.crediya.api;
 
+import co.com.crediya.model.exeption.BootcampRuleException;
+import co.com.crediya.model.token.InvalidJwtTokenException;
 import co.com.crediya.model.user.exceptions.BootcampRoleNotFoundException;
 import co.com.crediya.model.user.exceptions.BootcampUserAlreadyExistsException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,7 @@ import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 import reactor.core.publisher.Mono;
 
 import javax.management.relation.RoleNotFoundException;
+import javax.naming.AuthenticationException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +68,14 @@ public class GlobalExceptionHandler implements WebExceptionHandler {
             case BootcampUserAlreadyExistsException userAlreadyExistsException -> {
                 exchange.getResponse().setStatusCode(HttpStatus.CONFLICT);
                 buildResponseBody(body, CLIENT_ALREADY_EXISTS, ex.getMessage(), null);
+            }
+            case BootcampRuleException ruleException -> {
+                exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+                buildResponseBody(body, ERROR_VALIDATION, ruleException.getMessage(), null);
+            }
+            case AuthenticationException authEx -> {
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                buildResponseBody(body, "401_001", "Token inválido", null);
             }
             default -> {
                 exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);

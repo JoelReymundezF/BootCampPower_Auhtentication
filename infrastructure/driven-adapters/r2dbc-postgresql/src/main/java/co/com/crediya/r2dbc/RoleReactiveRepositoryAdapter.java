@@ -30,4 +30,9 @@ public class RoleReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     public Mono<Boolean> existsById(Long id) {
         return repository.existsById(id);
     }
+
+    @Override
+    public Mono<Role> findById(Long id) {
+        return super.findById(id);
+    }
 }

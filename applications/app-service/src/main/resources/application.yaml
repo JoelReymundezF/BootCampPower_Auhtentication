@@ -28,5 +28,9 @@ management:
     health:
       probes:
         enabled: true
+security:
+  jwt:
+    secret: mySuperSecretKey12345WithExtraChars!!
+    expiration: 3600000
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"

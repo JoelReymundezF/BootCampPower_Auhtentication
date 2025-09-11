@@ -5,12 +5,14 @@ import co.com.crediya.api.dto.UserDTO;
 import co.com.crediya.api.helper.validation.ValidationUtil;
 import co.com.crediya.api.mapper.UserMapperDTO;
 import co.com.crediya.model.user.User;
+import co.com.crediya.usecase.login.LoginUseCase;
 import co.com.crediya.usecase.user.UserUseCase;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -26,9 +28,17 @@ import java.util.Set;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
-@ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
 @WebFluxTest
-@Import({UserRouterRest.class, UserHandler.class, GlobalExceptionHandler.class})
+@ContextConfiguration(classes = {
+        UserRouterRest.class,
+        UserHandler.class,
+        GlobalExceptionHandler.class
+})
+@ImportAutoConfiguration(exclude = {
+        org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration.class
+})
 class RouterRestTest {
 
     @Autowired
@@ -42,6 +52,11 @@ class RouterRestTest {
 
     @MockitoBean
     private ValidationUtil validationUtil;
+
+    @MockitoBean
+    private LoginUseCase loginUseCase;
+
+
 
     private final User userOne = User.builder()
             .firstName("Joel")
@@ -58,6 +73,7 @@ class RouterRestTest {
     CreateUserDTO createUserDTO = new CreateUserDTO(
             "Joel",
             "Flores",
+            "123456",
             LocalDate.of(1995, 5, 21),
             "Av. Siempre Viva 123",
             "987654321",
