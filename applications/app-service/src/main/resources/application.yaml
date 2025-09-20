@@ -13,12 +13,12 @@ spring:
     include: null
 adapters:
   r2dbc:
-    host: "aws-1-sa-east-1.pooler.supabase.com"
+    host: ${DB_HOST}
     port: 5432
-    database: "postgres"
-    schema: "public"
-    username: "postgres.zoesbxsbinmyetggudtc"
-    password: "Zednumyer123"
+    database: ${DB_NAME}
+    schema: ${DB_SCHEMA}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 management:
   endpoints:
     web:
@@ -30,7 +30,7 @@ management:
         enabled: true
 security:
   jwt:
-    secret: mySuperSecretKey12345WithExtraChars!!
+    secret: ${JWT_SECRET}
     expiration: 3600000
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"

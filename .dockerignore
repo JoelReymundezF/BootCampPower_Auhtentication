@@ -1,0 +1,56 @@
+# Directorios de build
+**/build/
+**/target/
+build-cache/
+.gradle/
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Archivos de Git
+.git/
+.gitignore
+
+# Archivos de Docker
+Dockerfile*
+.dockerignore
+
+# Node modules (si los hay)
+node_modules/
+
+# Archivos de test
+**/test-results/
+
+# Variables de entorno locales
+.env*
+
+# Documentación
+README.md
+docs/
+
+# Archivos problemáticos o corruptos
+**/*~
+**/.#*
+**/._*

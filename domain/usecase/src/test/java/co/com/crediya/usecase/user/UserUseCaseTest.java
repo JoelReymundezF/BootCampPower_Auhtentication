@@ -8,7 +8,6 @@ import co.com.crediya.model.user.exceptions.BootcampRoleNotFoundException;
 import co.com.crediya.model.user.exceptions.BootcampUserAlreadyExistsException;
 import co.com.crediya.model.user.gateways.PasswordEncoderGateway;
 import co.com.crediya.model.user.gateways.UserRepository;
-import co.com.crediya.usecase.login.LoginUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

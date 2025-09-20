@@ -81,13 +81,11 @@ subprojects {
         }
         afterEvaluate {
             classDirectories.setFrom(
-                    files(classDirectories.files.collect {
-                        fileTree(dir: it, exclude: [
-                                'co/com/crediya/application/**',
-                                'co/com/crediya/api/**',
-                                'co/com/crediya/config/**'
-                        ])
-                    })
+                    files(classDirectories.files.collect { fileTree(dir: it, exclude: [
+                            "com/tuempresa/paquete/excluido/**",
+                            "**/config/**",
+                            "**/*Test.class"
+                    ]) })
             )
         }
     }
